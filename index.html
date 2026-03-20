@@ -233,7 +233,7 @@
             </div>
           </div>
           <div class="row" style="margin-top:10px;">
-            <a class="btn light" href="Elenco_partecipanti/Elenco%20partecipanti.xls" download>Scarica Excel modello</a>
+            <button class="btn light" type="button" data-scarica-modello>Scarica Excel modello</button>
           </div>
 
           <div class="row" style="margin-top:12px;">
@@ -871,11 +871,33 @@ function ensurePoppinsBold(doc, section) {
       updateStatus(section, `Scaricato: ${filename}`);
     }
 
+    function downloadModelFiles(section) {
+      const modelFiles = [
+        { href: "Elenco_partecipanti/Elenco%20partecipanti.xls", name: "Elenco partecipanti.xls" },
+        { href: "Elenco_partecipanti/Elenco%20partecipanti.xlsx", name: "Elenco partecipanti.xlsx" }
+      ];
+
+      modelFiles.forEach((file, idx) => {
+        const link = document.createElement("a");
+        link.href = file.href;
+        link.download = file.name;
+        link.style.display = "none";
+        document.body.appendChild(link);
+        setTimeout(() => {
+          link.click();
+          link.remove();
+        }, idx * 150);
+      });
+
+      updateStatus(section, "Download avviato: modello .xls e .xlsx");
+    }
+
     sections.forEach(section => {
       const dropzone = section.querySelector("[data-dropzone]");
       const fileInput = section.querySelector("[data-file-input]");
       const generateAllBtn = section.querySelector("[data-genera-tutti]");
       const uniquePdfBtn = section.querySelector("[data-unico-pdf]");
+      const downloadModelBtn = section.querySelector("[data-scarica-modello]");
 
       dropzone.addEventListener("dragover", (e) => {
         e.preventDefault();
@@ -895,6 +917,9 @@ function ensurePoppinsBold(doc, section) {
       generateAllBtn.addEventListener("click", () => saveAll(section));
       if (uniquePdfBtn) {
         uniquePdfBtn.addEventListener("click", () => saveCombined(section));
+      }
+      if (downloadModelBtn) {
+        downloadModelBtn.addEventListener("click", () => downloadModelFiles(section));
       }
 
       section.addEventListener("click", async (e) => {
